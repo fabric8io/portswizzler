@@ -8,3 +8,20 @@ So once your Ansible playbook as provisioned your application, you can run Port 
 
 Port Swizzler will check if the application has already swizzled the ports; if so it'll reuse the same port. If not it'll replace the ports with unique values for the application name.
 
+
+### Example
+
+First build Port Swizzler and generate some dummy data in `target/cheese`
+
+    mvn clean install
+    cp -r src/test/resources target/cheese
+
+Now you should be able to run portswizzler on the command line like this:
+
+    java -jar target/portswizzler-1.0-SNAPSHOT.jar myAppName target/cheese '**/*.cfg' '\.port\s*=\s*(\d+)'
+
+You should see the ports in the target/cheese/etc/*.cfg files have been changed!
+    
+The allocated ports are then written to `portswizzler.json` in the current working directory.    
+
+If you wish to explicitly set the location of the `portswizzler.json` file then use the `$PORTSWIZZLER_MAPPINGS` environment variable.

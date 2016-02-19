@@ -33,15 +33,22 @@ public class PortSwizzleTest {
     @Test
     public void testSwizzle() throws Exception {
         File testDir = new File(getBasedir(), "target/test-data");
-        swizzler.getPortMapper().setMappingFileName(new File(getBasedir(), "target/test-portswizzler/portmappings.json").getAbsolutePath());
+        String portSwizzlerFile = new File(getBasedir(), "target/test-portswizzler/portmappings.json").getAbsolutePath();
+        swizzler.getPortMapper().setMappingFileName(portSwizzlerFile);
 
         File testDataDir = new File(getBasedir(), "src/test/resources");
         Files.recursiveDelete(testDir);
         Files.copy(testDataDir, testDir);
 
         // lets swizzle multiple times
-        for (int i = 1; i <= 2; i++) {
+        for (int i = 1; i <= 3; i++) {
             System.out.println("Lets swizzle run: " + i);
+
+            if (i == 3) {
+                // lets force swizzler to recreate the port mapper!
+                swizzler.setPortMapper(new PortMapper());
+                swizzler.getPortMapper().setMappingFileName(portSwizzlerFile);
+            }
             assertSwizzle(testDir, "**/*.cfg", "\\.port\\s*=\\s*(\\d+)");
 
             assertFileContains(testDir, "etc/foo.cfg", "foo.port = 10000 bar.port = 10001");

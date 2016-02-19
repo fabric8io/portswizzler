@@ -41,6 +41,10 @@ public class PortSwizzler {
 
         if (args.length < 4) {
             System.out.println("Usage: appName baseDir filePattern replaceRegex");
+            System.out.println();
+            System.out.println("e.g.: myapp /opt/foo 'etc/*.cfg' '\\.port\\s*=\\s*(\\d+)'");
+            System.out.println();
+            System.out.println("Port Swizzler uses the first regex group as being the port number to be replaced.");
             System.exit(1);
         }
 
@@ -51,7 +55,7 @@ public class PortSwizzler {
 
         try {
             swizzler.swizzle();
-            System.out.println("ports swizzled!");
+            System.out.println("Port Swizzler has swizzled!");
         } catch (IOException e) {
             System.err.println("Failed to port swizzle: " + e);
             e.printStackTrace();
@@ -72,6 +76,7 @@ public class PortSwizzler {
 
         File dir = new File(basedir);
         String[] matches = ds.getIncludedFiles();
+        System.out.println("Port Swizzler is swizzling!");
         for (String match : matches) {
             File file = new File(dir, match);
             swizzleFile(file);
@@ -79,7 +84,7 @@ public class PortSwizzler {
     }
 
     public void swizzleFile(File file) throws IOException {
-        System.out.println("Lets swizzle file " + file);
+        System.out.println("  swizzling: " + file);
         List<String> lines = Files.readLines(file);
         Pattern pattern = Pattern.compile(replaceRegex);
 
@@ -106,6 +111,10 @@ public class PortSwizzler {
 
     public PortMapper getPortMapper() {
         return portMapper;
+    }
+
+    public void setPortMapper(PortMapper portMapper) {
+        this.portMapper = portMapper;
     }
 
     public String getAppName() {

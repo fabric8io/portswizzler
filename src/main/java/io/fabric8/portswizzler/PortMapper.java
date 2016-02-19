@@ -26,6 +26,8 @@ import java.util.Map;
 /**
  */
 public class PortMapper {
+    public static final String PORTSWIZZLER_MAPPINGS = "PORTSWIZZLER_MAPPINGS";
+
     private String mappingFileName;
     private AllPortMappings portMappings;
     private ObjectMapper json = new ObjectMapper();
@@ -59,7 +61,7 @@ public class PortMapper {
 
     public String getMappingFileName() {
         if (mappingFileName == null) {
-            mappingFileName = Systems.getEnvVarOrSystemProperty("PORTSWIZZLER_MAPPINGS", "/opt/portswizzler.json");
+            mappingFileName = Systems.getEnvVarOrSystemProperty(PORTSWIZZLER_MAPPINGS, "portswizzler.json");
         }
         return mappingFileName;
     }
@@ -75,6 +77,8 @@ public class PortMapper {
                 portMappings = json.readerFor(AllPortMappings.class).readValue(file);
                 portMappings.updateAllocatedPorts();
             }
+        }
+        if (portMappings == null) {
             portMappings = new AllPortMappings();
         }
         return portMappings;

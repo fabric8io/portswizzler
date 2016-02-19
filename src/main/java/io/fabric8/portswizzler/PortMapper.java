@@ -17,6 +17,7 @@
 package io.fabric8.portswizzler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.fabric8.utils.Systems;
 
 import java.io.File;
@@ -30,7 +31,7 @@ public class PortMapper {
 
     private String mappingFileName;
     private AllPortMappings portMappings;
-    private ObjectMapper json = new ObjectMapper();
+    private ObjectMapper json = new ObjectMapper(new YAMLFactory());
 
     public String getReplacementPort(String appName, String currentPort) throws IOException {
         Integer port;
@@ -61,7 +62,7 @@ public class PortMapper {
 
     public String getMappingFileName() {
         if (mappingFileName == null) {
-            mappingFileName = Systems.getEnvVarOrSystemProperty(PORTSWIZZLER_MAPPINGS, "portswizzler.json");
+            mappingFileName = Systems.getEnvVarOrSystemProperty(PORTSWIZZLER_MAPPINGS, "portswizzler.yml");
         }
         return mappingFileName;
     }
@@ -94,7 +95,18 @@ public class PortMapper {
     }
 
     protected void savePortMappings() throws IOException {
-        json.writer().withDefaultPrettyPrinter().writeValue(getMappingFile(), getPortMappings());
+        File file = getMappingFile();
+        AllPortMappings data = getPortMappings();
+        writeYaml(file, data);
     }
 
+    protected void writeYaml(File file, Object data) throws IOException {
+        json.writer().withDefaultPrettyPrinter().writeValue(file, data);
+    }
+
+    public void writePortYml(String appName, File file) throws IOException {
+        PortMappings appData = getPortMappings().mappingsForApp(appName);
+        writeYaml(file, appData);
+        System.out.println("Written ports.yml file at " + file);
+    }
 }

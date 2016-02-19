@@ -18,10 +18,12 @@ First build Port Swizzler and generate some dummy data in `target/cheese`
 
 Now you should be able to run portswizzler on the command line like this:
 
-    java -jar target/portswizzler-1.0-SNAPSHOT.jar myAppName target/cheese '**/*.cfg' '\.port\s*=\s*(\d+)'
+    java -jar target/portswizzler-1.0-SNAPSHOT.jar myAppName target/cheese '**/*.cfg' '\.port\s*=\s*(\d+)' target/ports.yml
 
 You should see the ports in the target/cheese/etc/*.cfg files have been changed!
-    
-The allocated ports are then written to `portswizzler.json` in the current working directory.    
 
-If you wish to explicitly set the location of the `portswizzler.json` file then use the `$PORTSWIZZLER_MAPPINGS` environment variable.
+The mappings of the ports for your app should be written to `target/ports.yml` so that it can be made available to [kansible](https://github.com/fabric8io/kansible)
+    
+The allocated ports are then written to `portswizzler.yml` in the current working directory.    
+
+If you wish to explicitly set the location of the `portswizzler.yml` file then use the `$PORTSWIZZLER_MAPPINGS` environment variable.

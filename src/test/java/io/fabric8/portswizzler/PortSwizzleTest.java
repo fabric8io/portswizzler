@@ -32,9 +32,11 @@ public class PortSwizzleTest {
     PortSwizzler swizzler = new PortSwizzler();
     @Test
     public void testSwizzle() throws Exception {
-        File testDir = new File(getBasedir(), "target/test-data");
-        String portSwizzlerFile = new File(getBasedir(), "target/test-portswizzler/portmappings.json").getAbsolutePath();
+        File testDir = new File(getBasedir(), "target/test-data/data");
+        String portSwizzlerFile = new File(getBasedir(), "target/test-data/portmappings.yml").getAbsolutePath();
+        String portYamlFile = new File(getBasedir(), "target/test-data/ports.yml").getAbsolutePath();
         swizzler.getPortMapper().setMappingFileName(portSwizzlerFile);
+        swizzler.setPortYmlFile(portYamlFile);
 
         File testDataDir = new File(getBasedir(), "src/test/resources");
         Files.recursiveDelete(testDir);

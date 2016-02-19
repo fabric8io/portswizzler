@@ -14,4 +14,4 @@ overlays
 .cache
 dependency-reduced-pom.xml
 .vagrant/
-portswizzler.json
+portswizzler.yml

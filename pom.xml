@@ -166,6 +166,10 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+    </dependency>
 
     <!-- testing -->
     <dependency>
@@ -331,7 +335,7 @@
             <fileset>
               <directory>${basedir}</directory>
               <includes>
-                <include>portswizzler.json</include>
+                <include>portswizzler.yml</include>
               </includes>
             </fileset>
           </filesets>

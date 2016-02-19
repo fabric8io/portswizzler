@@ -17,6 +17,7 @@
 package io.fabric8.portswizzler;
 
 import io.fabric8.utils.Files;
+import io.fabric8.utils.Strings;
 import org.apache.tools.ant.DirectoryScanner;
 
 import java.io.File;
@@ -35,12 +36,13 @@ public class PortSwizzler {
     private String[] fileExcludes = {};
     private String replaceRegex;
     private PortMapper portMapper = new PortMapper();
+    private String portYmlFile;
 
     public static void main(String[] args) {
         PortSwizzler swizzler = new PortSwizzler();
 
         if (args.length < 4) {
-            System.out.println("Usage: appName baseDir filePattern replaceRegex");
+            System.out.println("Usage: appName baseDir filePattern replaceRegex portYmlFile");
             System.out.println();
             System.out.println("e.g.: myapp /opt/foo 'etc/*.cfg' '\\.port\\s*=\\s*(\\d+)'");
             System.out.println();
@@ -52,6 +54,9 @@ public class PortSwizzler {
         swizzler.setBasedir(args[1]);
         swizzler.setFileIncludes(args[2]);
         swizzler.setReplaceRegex(args[3]);
+        if (args.length > 3) {
+            swizzler.setPortYmlFile(args[4]);
+        }
 
         try {
             swizzler.swizzle();
@@ -80,6 +85,14 @@ public class PortSwizzler {
         for (String match : matches) {
             File file = new File(dir, match);
             swizzleFile(file);
+        }
+        if (Strings.isNotBlank(portYmlFile)) {
+            File file = new File(portYmlFile);
+            File parent = file.getParentFile();
+            if (parent != null) {
+                parent.mkdirs();
+            }
+            portMapper.writePortYml(appName, file);
         }
     }
 
@@ -155,5 +168,13 @@ public class PortSwizzler {
 
     public void setReplaceRegex(String replaceRegex) {
         this.replaceRegex = replaceRegex;
+    }
+
+    public String getPortYmlFile() {
+        return portYmlFile;
+    }
+
+    public void setPortYmlFile(String portYmlFile) {
+        this.portYmlFile = portYmlFile;
     }
 }

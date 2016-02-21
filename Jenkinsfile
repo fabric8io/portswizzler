@@ -4,26 +4,27 @@ node{
 
   def name = 'portswizzler'
   def mavenCentralArtifact = 'io/fabric8/portswizzler/portswizzler'
-  
-  def stagedProject = stageProject{
-    project = name
-  }
 
-  String pullRequestId = release {
-    projectStagingDetails = stagedProject
-    project = name
-    helmPush = false
-  }
+  kubernetes.pod('buildpod').withImage('maven:3.3.3').inside {
 
-  if (pullRequestId != null){
+    def stagedProject = stageProject{
+      project = name
+    }
+
+    String pullRequestId = release {
+      projectStagingDetails = stagedProject
+      project = name
+      helmPush = false
+    }
+
     waitUntilPullRequestMerged{
       name = name
       prId = pullRequestId
     }
-  }
 
-  waitUntilArtifactSyncedWithCentral {
-    artifact = mavenCentralArtifact
-    version = stagedProject[1]
+    waitUntilArtifactSyncedWithCentral {
+      artifact = mavenCentralArtifact
+      version = stagedProject[1]
+    }
   }
 }

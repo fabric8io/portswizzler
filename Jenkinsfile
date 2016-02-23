@@ -1,24 +1,41 @@
 #!/usr/bin/groovy
 node{
-  checkout scm
 
-  def name = 'portswizzler'
+  def projectName = 'portswizzler'
   def mavenCentralArtifact = 'io/fabric8/portswizzler/portswizzler'
 
-  kubernetes.pod('buildpod').withImage('maven:3.3.3').inside {
+  kubernetes.pod('buildpod').withImage('fabric8/maven-builder:1.0')
+  .withHostPathMount('/var/run/docker.sock','/var/run/docker.sock')
+  .withSecret('jenkins-maven-settings','/root/.m2')
+  .withSecret('jenkins-ssh-config','/root/.ssh')
+  .withSecret('jenkins-git-ssh','/root/.ssh-git')
+  .withSecret('jenkins-release-gpg','/root/.gnupg/')
+  .inside {
+
+    sh 'chmod 600 /root/.ssh-git/ssh-key'
+    sh 'chmod 600 /root/.ssh-git/ssh-key.pub'
+    sh 'chmod 700 /root/.ssh-git'
+    sh 'chmod 600 /root/.gnupg/pubring.gpg'
+    sh 'chmod 600 /root/.gnupg/secring.gpg'
+    sh 'chmod 600 /root/.gnupg/trustdb.gpg'
+    sh 'chmod 700 /root/.gnupg'
+
+    checkout scm
+
+    sh 'git remote set-url origin git@github.com:fabric8io/portswizzler.git'
 
     def stagedProject = stageProject{
-      project = name
+      project = projectName
     }
 
     String pullRequestId = release {
       projectStagingDetails = stagedProject
-      project = name
+      project = projectName
       helmPush = false
     }
 
     waitUntilPullRequestMerged{
-      name = name
+      name = projectName
       prId = pullRequestId
     }
 
